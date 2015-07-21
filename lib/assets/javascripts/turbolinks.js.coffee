@@ -157,7 +157,10 @@ changePage = (title, body, csrfToken, options) ->
       nodesToKeep.push(findNodesMatchingKeys(currentBody, options.keep)...) if options.keep
       swapNodes(body, nodesToKeep, keep: true)
 
-    document.body = body
+    diff = new diffDOM
+    bod = diff.diff(document.body, body)
+    diff.apply document.body, bod
+
     CSRFToken.update csrfToken if csrfToken?
     setAutofocusElement()
     changedNodes = [body]
