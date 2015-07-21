@@ -157,7 +157,9 @@ changePage = (title, body, csrfToken, options) ->
       nodesToKeep.push(findNodesMatchingKeys(currentBody, options.keep)...) if options.keep
       swapNodes(body, nodesToKeep, keep: true)
 
-    document.body = body
+    diff = new diffDOM
+    bod = diff.diff(document.body, body)
+    diff.apply document.body, bod
     CSRFToken.update csrfToken if csrfToken?
     setAutofocusElement()
     changedNodes = [body]
@@ -200,8 +202,6 @@ swapNodes = (targetBody, existingNodes, options) ->
   return changedNodes
 
 onNodeRemoved = (node) ->
-  if typeof jQuery isnt 'undefined'
-    jQuery(node).remove()
   triggerEvent(EVENTS.AFTER_REMOVE, node)
 
 executeScriptTags = (selector) ->
